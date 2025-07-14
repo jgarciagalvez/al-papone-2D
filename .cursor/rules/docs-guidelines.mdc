@@ -1,0 +1,18 @@
+---
+alwaysApply: true
+---
+
+Generate documentation that is concise, precise, and practical for an LLM developer agent working on a pre-launch game dev indie project. Documentation must be crisp, essential, clear, with explicit definitions of data structures, logic, and flows. Avoid over-engineering.
+
+Our documentation supports a staged LLM-assisted development process. Each 'level' (e.g., 'L2_SystemDesign') operates at a level of abstraction and only information at that level should be included. Duplication must be avoided within a stage. Schemas must only be articulated in L2_SystemDesign/schemas; all other mention of schemas should include minimum necessary details to explain the logic, with a reference to the relevant schema file in L2_SystemDesign/schemas.
+
+The levels are:
+/docs/L0_Todos/ - task planning and backlog.
+/docs/L1_ProjectOverview/ - principles, tech stack, high level flow design.
+/docs/L2_SystemDesign/ - contains /components and /schemas.
+/docs/L3_ImplementationGuides/ - topic based guideline documents for detailed implementation (eg logging, etc).
+/docs/L4_DirectoryBlueprint/ - .md file 1:1 blueprint with the actual codebase, where each .md file contains pseudocode to help design the component structure, functions, and flows in detail.
+/docs/L5_Codebase/ - .md guidelines on actual codebase development. Codebase changes are done at this level.
+/docs/L6_Operations/ - .md guidelines for deployment and other devops.
+
+We're currently working on L1, and don't have a codebase yet, so always seek the most elegant design. We don't have a production system to worry about, and so its OK to redesign at L1 or L2 if an issue emerges more detailed discussions that reveals a more elegant higher level design.

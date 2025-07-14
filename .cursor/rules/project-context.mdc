@@ -1,0 +1,7 @@
+---
+alwaysApply: true
+---
+
+The project is the development of an indie browser based game called Al Papone. It is a 2D run-and-gun platformer where a potato gangster in the 1920s prohibition era fights carrot gangsters and potato police with a tommy gun, using the Al Papone branding from a Granada takeaway. MVP: A playable web-based game with 3-4 levels, basic enemies, shooting mechanics, and simple progression system. 
+
+We are currently working on the design and docs for the MVP. We are working on the early Levels in the Levels of Abstraction documentation structure, and don't have a codebase yet, so should focus on overall elegant system design (not post-production careful tweaks). 
