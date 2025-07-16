@@ -6,31 +6,42 @@ This document outlines the high-level application flow and the core modules that
 
 The game's architecture is built on a "Central Conductor" pattern. This pattern uses a single `GameManager` module to control the main application state and orchestrate all other independent systems. This design ensures a flat hierarchy and a single source of truth for the game's overall state, aligning with our principles of modularity and clarity.
 
-##### 1.1. Application State Diagram
+##### 1.1. Application Flow & State Definitions
 
-The `GameManager` transitions between the following states to control the application flow:
+The `GameManager` orchestrates the game by moving through the following defined states. This provides a single, clear source of truth for the application's flow. The memory management strategy (swapping level assets) is a key part of this design.
 
-```mermaid
-graph TD
-    A[Load Game] --> InitialLoad[InitialLoad];
-    InitialLoad -->|"Global Assets Loaded"| B[MainMenu];
-    B -->|"Player Clicks Start"| C[LoadingLevel];
-    C -->|"Level Assets Loaded"| D[InGame];
-    D -->|"Player Pauses"| E[Paused];
-    E -->|"Player Resumes"| D;
-    D -->|"Level Complete"| C;
-    D -->|"Player Dies (no lives left)"| F[GameOver];
-    F -->|"Player Action"| B;
-```
+*   **`InitialLoad`**
+    *   **Purpose:** Loads all **Global Assets** (e.g., player sprite, UI elements, fonts, menu backgrounds) into persistent memory for the duration of the session.
+    *   **Transitions:** Automatically enters this state on application start. On completion, transitions to `MainMenu`.
 
-##### 1.2. The Player's Journey
+*   **`MainMenu`**
+    *   **Purpose:** Acts as the main hub. Presents the player with options to "Start Game" or "View Leaderboard".
+    *   **Transitions:** Entered from `InitialLoad`, `GameComplete`, or `GameOver`. On "Start Game," transitions to `LoadingLevel`.
 
-From the user's perspective, the flow is as follows:
-1.  The game performs an **Initial Load** for global assets before displaying the **Main Menu**.
-2.  The player initiates the game, triggering a **Loading Level** state where level-specific assets are prepared.
-3.  The game transitions to the **In-Game** state, where the core gameplay loop runs.
-4.  If a level is completed, the game returns to the **Loading Level** state to prepare the next level.
-5.  If the player runs out of lives, the game enters a **Game Over** state, from which they can return to the Main Menu.
+*   **`LoadingLevel`**
+    *   **Purpose:** The core transition state for managing memory. It **unloads** the assets from the previous level (if one exists) and **loads** the assets for the upcoming level. During this process, it displays the relevant narrative cutscenes (e.g., combining the end cutscene of Level 1 with the intro cutscene for Level 2).
+    *   **Transitions:** Entered from `MainMenu` or `InGame`. On completion, transitions to `InGame`.
+
+*   **`InGame`**
+    *   **Purpose:** The active gameplay state where the player has control. Upon level completion, the game logic determines if it was the final level.
+    *   **Transitions:**
+        *   Entered from `LoadingLevel` or `Paused`.
+        *   Transitions to `Paused` if the player pauses.
+        *   Transitions to `GameOver` if the player runs out of lives.
+        *   Transitions to `LoadingLevel` if a level is completed and it is **not** the final level.
+        *   Transitions to `GameComplete` if the **final** level is completed.
+
+*   **`Paused`**
+    *   **Purpose:** Freezes the gameplay and shows a pause menu with options to resume or quit.
+    *   **Transitions:** Entered from `InGame`. On resume, transitions back to `InGame`.
+
+*   **`GameComplete`**
+    *   **Purpose:** The "You Win!" state. Displays the final cutscene and game credits, then allows the player to view the leaderboard and save their score.
+    *   **Transitions:** Entered from `InGame`. Upon player action, transitions to `MainMenu`.
+
+*   **`GameOver`**
+    *   **Purpose:** The "You Lose" state. Displays the player's final score alongside the leaderboard and allows the player to enter their name to save their high score.
+    *   **Transitions:** Entered from `InGame`. Upon player action, transitions to `MainMenu`.
 
 #### 2. Core Modules & Communication
 
