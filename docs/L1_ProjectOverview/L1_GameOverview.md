@@ -1,4 +1,4 @@
-# Game Overview: Al Papone (MVP)
+# Game Overview: Al Papone 2D (MVP)
 
 ## 1. Core Concept
 
@@ -10,7 +10,7 @@
 ## 2. Narrative & World
 
 ### Characters
-* **Al Papone (Player):** The respected "Spudfather" of the Tuber underworld. After a devastating betrayal shattered his organization, his sole focus is rescuing his son.
+* **Al Papone (Player):** The respected "Spudfather" of the Tuber underworld. After a devastating betrayal shattered his organization, his sole focus is rescuing his family.
 * **Spud Jr.:** Al Papone's son, kidnapped by the Root Syndicate.
 * **Rose Papone:** Al Papone's wife, kidnapped by the Root Syndicate.
 * **The Root Syndicate (Enemies):** A ruthless gang of "taproot" vegetables. Their ranks are filled with Carrot grunts, Radish brawlers, and Parsnip snipers, led by Al's former second-in-command.
@@ -25,13 +25,10 @@ The story follows a clear, three-act rescue mission.
 
 ## 3. Core Gameplay & Systems
 
-### Core Loop
-The gameplay is built on a simple, engaging loop: **Run -> Shoot -> Platform -> Survive**. The player is constantly pushed forward to engage enemies and navigate the environment.
-
 ### Player Controls
 * **Move:** Left / Right
 * **Jump:** Can shoot while jumping.
-* **Shoot:** 4-directional aiming (Up, Down, Left, Right).
+* **Shoot:** 4 or 8-directional aiming.
 * **Use Special:** Throws a grenade.
 
 ### Lives & Scoring
@@ -66,7 +63,7 @@ Levels will feature verticality and obstacles integrated thematically into the c
 * Construction scaffolding
 * Building rooftops
 * Stacked crates
-* Moving trams
+* Static trams
 
 ### Level Breakdown
 * **Level 1: The Betrayal**
@@ -96,7 +93,6 @@ Levels will feature verticality and obstacles integrated thematically into the c
 * Complex collectibles or secret-finding systems.
 * Experience points, skill trees, or character progression.
 * Story cutscenes beyond simple still images.
-* 8-directional aiming.
 
 ## 7. Storytelling Method
 
