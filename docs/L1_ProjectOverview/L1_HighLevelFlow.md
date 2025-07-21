@@ -15,13 +15,17 @@ The GameManager makes a primary System active by running its update loop, or ina
     *   **Role:** Manages game state transitions and activates/deactivates the primary Systems. It is a pure orchestrator and does not call any Services directly.
     *   **Uses Services:** None.
     *   **Controls Systems:**
-        *   **`LoadingSystem`**
-            *   **Role:** Manages loading screens and presents narrative cutscenes. It orchestrates the `AssetService` and `LevelService` to prepare for the next state.
-            *   **Active States:** `InitialLoad`, `LoadingLevel`.
-            *   **Uses Services:** `AssetService`, `LevelService`, `AudioService`.
+        *   **`BootSystem`**
+            *   **Role:** Manages the initial game launch, displaying a splash screen and loading global assets required for the main menu.
+            *   **Active States:** `InitialBoot`.
+            *   **Uses Services:** `AssetService`, `AudioService`.
+        *   **`StorySystem`**
+            *   **Role:** Manages and displays non-interactive story elements (cutscenes, death sequences, etc.). It orchestrates background loading of assets for the next active System.
+            *   **Active States:** `LevelLoad`, `LevelComplete`, `PlayerWin`, `PlayerDead`.
+            *   **Uses Services:** `AssetService`, `LevelService`, `AudioService`, `InputService`.
         *   **`MenuSystem`**
             *   **Role:** Handles all interactive, non-gameplay UI (main menu, pause, leaderboards).
-            *   **Active States:** `MainMenu`, `ViewLeaderboard`, `LevelComplete`, `Paused`, `GameOver`, `GameComplete`.
+            *   **Active States:** `MainMenu`, `ViewLeaderboard`, `Paused`, `ScoreEntry`.
             *   **Uses Services:** `InputService`, `AudioService`, `PersistenceService`, `AssetService`.
         *   **`GameplaySystem`**
             *   **Role:** Runs the core game loop, physics, and entity logic.
@@ -41,105 +45,23 @@ The GameManager makes a primary System active by running its update loop, or ina
 
 The `GameManager` transitions between states, each activating a primary System.
 
-*   **`InitialLoad`**: `LoadingSystem` is active. It loads global assets.
+*   **`InitialBoot`**: `BootSystem` is active. It loads global assets.
     *   **→** `MainMenu`
 *   **`MainMenu`**: `MenuSystem` is active. Player can start game or view scores.
-    *   **→** `LoadingLevel` or `ViewLeaderboard`
+    *   **→** `LevelLoad` or `ViewLeaderboard`
 *   **`ViewLeaderboard`**: `MenuSystem` is active. Shows high scores.
     *   **→** `MainMenu`
-*   **`LoadingLevel`**: `LoadingSystem` is active. It loads level assets and displays cutscenes while `LevelService` prepares the level in the background.
+*   **`LevelLoad`**: `StorySystem` is active. It displays a cutscene while `AssetService` and `LevelService` prepare the next level in the background.
     *   **→** `InGame`
 *   **`InGame`**: `GameplaySystem` is active. Core gameplay is active.
-    *   **→** `Paused`, `LevelComplete`, or `GameOver`
-*   **`Paused`**: The GameplaySystem is made inactive, freezing the game and preserving its state. The MenuSystem becomes active to display the pause menu.
+    *   **→** `Paused`, `LevelComplete`, or `PlayerDead` (on final life lost).
+*   **`Paused`**: The `GameplaySystem` is made inactive, freezing the game and preserving its state. The `MenuSystem` becomes active to display the pause menu.
     *   **→** `InGame` (the `GameplaySystem` is made active again) or `MainMenu`
-*   **`LevelComplete`**: `MenuSystem` is active. Shows score summary.
-    *   **→** `LoadingLevel` (next level) or `GameComplete`
-*   **`GameOver`**: `MenuSystem` is active. Player has lost all lives.
+*   **`LevelComplete`**: `StorySystem` is active. Shows a level completion sequence.
+    *   **→** `LevelLoad` (next level) or `PlayerWin` (game complete)
+*   **`PlayerWin`**: `StorySystem` is active. Player has finished the final level and is shown a celebration scene.
+    *   **→** `ScoreEntry`
+*   **`PlayerDead`**: `StorySystem` is active. It plays a final death scene after all lives are used.
+    *   **→** `ScoreEntry`
+*   **`ScoreEntry`**: `MenuSystem` is active. Player enters their name for the leaderboard after winning or losing.
     *   **→** `MainMenu`
-*   **`GameComplete`**: `MenuSystem` is active. Player has finished the final level.
-    *   **→** `MainMenu`
-
-### 3. Module Summary Table
-
-<table>
-  <thead>
-    <tr>
-      <th>Module</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Services Used</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="4" style="text-align: center;"><strong>Orchestrator</strong></td>
-    </tr>
-    <tr>
-      <td><code>GameManager</code></td>
-      <td>Orchestrator</td>
-      <td>Manages state transitions, activates Systems.</td>
-      <td>-</td>
-    </tr>
-    <tr>
-      <td colspan="4" style="text-align: center;"><strong>Systems</strong></td>
-    </tr>
-    <tr>
-      <td><code>LoadingSystem</code></td>
-      <td>System</td>
-      <td>Manages loading screens and cutscenes.</td>
-      <td><code>AssetService</code>, <code>LevelService</code>, <code>AudioService</code></td>
-    </tr>
-    <tr>
-      <td><code>MenuSystem</code></td>
-      <td>System</td>
-      <td>Handles all interactive non-gameplay menus.</td>
-      <td><code>InputService</code>, <code>AudioService</code>, <code>PersistenceService</code>, <code>AssetService</code></td>
-    </tr>
-    <tr>
-      <td><code>GameplaySystem</code></td>
-      <td>System</td>
-      <td>Runs core game loop, physics, and logic.</td>
-      <td><code>InputService</code>, <code>AudioService</code>, <code>LevelService</code>, <code>HUDService</code>, <code>AssetService</code></td>
-    </tr>
-    <tr>
-      <td colspan="4" style="text-align: center;"><strong>Services</strong></td>
-    </tr>
-    <tr>
-      <td><code>AssetService</code></td>
-      <td>Service</td>
-      <td>Loads, unloads, and provides access to raw assets.</td>
-      <td>-</td>
-    </tr>
-    <tr>
-      <td><code>InputService</code></td>
-      <td>Service</td>
-      <td>Abstracts physical inputs to logical actions.</td>
-      <td>-</td>
-    </tr>
-    <tr>
-      <td><code>AudioService</code></td>
-      <td>Service</td>
-      <td>Plays sound/music data provided by a System.</td>
-      <td>-</td>
-    </tr>
-    <tr>
-      <td><code>LevelService</code></td>
-      <td>Service</td>
-      <td>Parses level data provided by a System.</td>
-      <td>-</td>
-    </tr>
-    <tr>
-      <td><code>HUDService</code></td>
-      <td>Service</td>
-      <td>Renders HUD data provided by a System.</td>
-      <td>-</td>
-    </tr>
-    <tr>
-      <td><code>PersistenceService</code></td>
-      <td>Service</td>
-      <td>Saves/loads persistent data (e.g., scores).</td>
-      <td>-</td>
-    </tr>
-  </tbody>
-</table>
