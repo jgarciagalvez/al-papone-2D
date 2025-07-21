@@ -18,7 +18,7 @@ The GameManager makes a primary System active by running its update loop, or ina
         *   **`LoadingSystem`**
             *   **Role:** Manages loading screens and presents narrative cutscenes. It orchestrates the `AssetService` and `LevelService` to prepare for the next state.
             *   **Active States:** `InitialLoad`, `LoadingLevel`.
-            *   **Uses Services:** `AssetService`, `LevelService`.
+            *   **Uses Services:** `AssetService`, `LevelService`, `AudioService`.
         *   **`MenuSystem`**
             *   **Role:** Handles all interactive, non-gameplay UI (main menu, pause, leaderboards).
             *   **Active States:** `MainMenu`, `ViewLeaderboard`, `LevelComplete`, `Paused`, `GameOver`, `GameComplete`.
@@ -88,7 +88,7 @@ The `GameManager` transitions between states, each activating a primary System.
       <td><code>LoadingSystem</code></td>
       <td>System</td>
       <td>Manages loading screens and cutscenes.</td>
-      <td><code>AssetService</code>, <code>LevelService</code></td>
+      <td><code>AssetService</code>, <code>LevelService</code>, <code>AudioService</code></td>
     </tr>
     <tr>
       <td><code>MenuSystem</code></td>

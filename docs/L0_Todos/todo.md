@@ -1,4 +1,4 @@
-- audio and input services used in the loading system?
+- ADDED - audio and input services used in the loading system? - Note: will need to include some sounds and music in the initialLoad so they are always available.
 
 - do you want a cutscene at the game complete and/or game over?
 
