@@ -50,7 +50,7 @@ The `GameManager` transitions between states, each activating a primary System.
 *   **`MainMenu`**: `MenuSystem` is active. Player can start game or view scores.
     *   **→** `LevelLoad` or `ViewLeaderboard`
 *   **`ViewLeaderboard`**: `MenuSystem` is active. Shows high scores.
-    *   **→** `MainMenu`
+    *   **→** `MainMenu` or `LevelLoad`
 *   **`LevelLoad`**: `StorySystem` is active. It displays a cutscene while `AssetService` and `LevelService` prepare the next level in the background.
     *   **→** `InGame`
 *   **`InGame`**: `GameplaySystem` is active. Core gameplay is active.
