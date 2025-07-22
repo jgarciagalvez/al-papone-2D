@@ -9,10 +9,10 @@ Our documentation supports a staged LLM-assisted development process. Each 'leve
 The levels are:
 /docs/L0_Todos/ - task planning and backlog.
 /docs/L1_ProjectOverview/ - principles, tech stack, high level flow design.
-/docs/L2_SystemDesign/ - contains /components and /schemas.
+/docs/L2_SystemDesign/ - contains /modules and /schemas.
 /docs/L3_ImplementationGuides/ - topic based guideline documents for detailed implementation (eg logging, etc).
 /docs/L4_DirectoryBlueprint/ - .md file 1:1 blueprint with the actual codebase, where each .md file contains pseudocode to help design the component structure, functions, and flows in detail.
 /docs/L5_Codebase/ - .md guidelines on actual codebase development. Codebase changes are done at this level.
 /docs/L6_Operations/ - .md guidelines for deployment and other devops.
 
-We're currently working on L1, and don't have a codebase yet, so always seek the most elegant design. We don't have a production system to worry about, and so its OK to redesign at L1 or L2 if an issue emerges more detailed discussions that reveals a more elegant higher level design.
+We're currently working on L2 having just completed L1, and don't have a codebase yet, so always seek the most elegant design. We don't have a production system to worry about, and so its OK to redesign at L1 or L2 if an issue emerges more detailed discussions that reveals a more elegant higher level design.
