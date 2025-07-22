@@ -64,4 +64,4 @@ The `GameManager` transitions between states, each activating a primary System.
 *   **`PlayerDead`**: `StorySystem` is active. It plays a final death scene after all lives are used.
     *   **→** `ScoreEntry`
 *   **`ScoreEntry`**: `MenuSystem` is active. Player enters their name for the leaderboard after winning or losing.
-    *   **→** `MainMenu`
+    *   **→** `MainMenu` or `LevelLoad`
