@@ -4,6 +4,20 @@ The `GameManager` is the application's central orchestrator. It manages the high
 
 The authoritative definition of all game states and their valid transitions is located in `docs/L1_ProjectOverview/L1_HighLevelFlow.md`. This document specifies the `GameManager`'s responsibilities within each of those states.
 
+## Data Management Strategy
+
+The `GameManager` uses a **"Session + Payload"** model to manage data flow between itself and the `Systems` it controls. This model clearly separates persistent state from transient initialization data.
+
+*   **`GameSession` Object:** A state object containing all data for a single playthrough, composed of modular sub-objects (`PlayerProfile`, `SessionProgress`, `Scoring`).
+    *   **Ownership:** Owned and managed by the `GameManager`.
+    *   **Communication:** Passed by **scoped reference**. The `GameManager` provides each `System` with access to only the specific sub-sections of the `GameSession` it requires, enforcing a principle of least privilege.
+    *   **Schema:** Defined in `docs/L2_SystemDesign/schemas/S_GameSession.md`.
+
+*   **Transition Payloads:** Ephemeral data objects used only for `System` initialization.
+    *   **Ownership:** Created and owned by the `System` that initiates a state transition.
+    *   **Communication:** Passed as an argument in the `transitionTo(state, payload)` method. The initiating `System` provides the payload, and the `GameManager` passes it directly to the new `System` without inspection.
+    *   **Purpose:** To provide context-specific startup data (e.g., a `levelId`) to the next `System` without polluting the persistent `GameSession`.
+
 ## Initial Setup
 
 Before any state becomes active, the `GameManager` performs a one-time setup:
@@ -88,7 +102,7 @@ The `GameManager`'s core is a central `transitionTo(state)` function containing 
 
 **OnEnter Logic:**
 1.  Handles teardown of the previous system (`MenuSystem` from either `MainMenu` or `ViewLeaderboard`).
-2.  Instantiates the `StorySystem` and provides it with the designated `Active Services`.
+2.  Instantiates the `StorySystem`, providing it with the designated `Active Services`, the `LevelLoadData` payload, and a reference to `GameSession.sessionProgress`.
 3.  Sets `StorySystem` as the active system.
 
 **OnUpdate Logic:**
@@ -110,7 +124,7 @@ The `GameManager`'s core is a central `transitionTo(state)` function containing 
 
 **OnEnter Logic:**
 1.  Handles teardown of the `StorySystem`.
-2.  If this is a new game (not returning from `Paused`), instantiates the `GameplaySystem` and provides it with the designated `Active Services`.
+2.  If this is a new game (not returning from `Paused`), instantiates the `GameplaySystem`, providing it with the designated `Active Services` and references to `GameSession.playerProfile`, `GameSession.sessionProgress`, and `GameSession.scoring`.
 3.  If returning from `Paused`, it simply makes the existing `GameplaySystem` active again.
 4.  Sets `GameplaySystem` as the active system.
 
@@ -132,7 +146,7 @@ The `GameManager`'s core is a central `transitionTo(state)` function containing 
 
 **OnEnter Logic:**
 1.  Makes the `GameplaySystem` inactive, preserving its state.
-2.  Instantiates the `MenuSystem` and provides it with the designated `Active Services`.
+2.  Instantiates the `MenuSystem`, providing it with the designated `Active Services` and read-only access to `GameSession.playerProfile` and `GameSession.scoring`.
 3.  Sets `MenuSystem` as the active system.
 
 **OnUpdate Logic:**
@@ -154,7 +168,7 @@ The `GameManager`'s core is a central `transitionTo(state)` function containing 
 
 **OnEnter Logic:**
 1.  Handles teardown of the `GameplaySystem`.
-2.  Instantiates the `StorySystem` and provides it with the designated `Active Services`.
+2.  Instantiates the `StorySystem`, providing it with the designated `Active Services`, the `LevelCompleteData` payload, and references to `GameSession.playerProfile`, `GameSession.sessionProgress`, and `GameSession.scoring`.
 3.  Sets `StorySystem` as the active system.
 
 **OnUpdate Logic:**
@@ -191,7 +205,7 @@ The `GameManager`'s core is a central `transitionTo(state)` function containing 
 
 **OnEnter Logic:**
 1.  Handles teardown of the `GameplaySystem`.
-2.  Instantiates the `StorySystem` and provides it with the designated `Active Services`.
+2.  Instantiates the `StorySystem`, providing it with the designated `Active Services`, the `PlayerDeadData` payload, and references to `GameSession.scoring` and `GameSession.sessionProgress`.
 3.  Sets `StorySystem` as the active system.
 
 **OnUpdate Logic:**
@@ -211,7 +225,7 @@ The `GameManager`'s core is a central `transitionTo(state)` function containing 
 
 **OnEnter Logic:**
 1.  Handles teardown of the previous system (`StorySystem` from either `PlayerWin` or `PlayerDead`).
-2.  Instantiates the `MenuSystem` and provides it with the designated `Active Services`.
+2.  Instantiates the `MenuSystem`, providing it with the designated `Active Services` and a reference to `GameSession.scoring`.
 3.  Sets `MenuSystem` as the active system.
 
 **OnUpdate Logic:**

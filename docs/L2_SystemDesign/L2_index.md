@@ -13,3 +13,6 @@ Modules are the active, logical components of the game. Each document describes 
 Schemas are the passive data structures of the game. They define the shape of data that is passed between modules or persisted.
 
 *   [S_GameSession](./schemas/S_GameSession.md)
+*   [S_LevelCompleteData](./schemas/S_LevelCompleteData.md)
+*   [S_LevelLoadData](./schemas/S_LevelLoadData.md)
+*   [S_PlayerDeadData](./schemas/S_PlayerDeadData.md)
