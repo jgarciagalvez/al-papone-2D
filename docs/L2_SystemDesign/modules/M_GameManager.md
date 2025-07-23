@@ -1,6 +1,6 @@
 # L2 Module: GameManager
 
-The `GameManager` is the application's central orchestrator. It manages the high-level game state and controls the lifecycle of primary `System` modules.
+The `GameManager` is the application's central orchestrator. It manages the high-level game state and controls the lifecycle of primary `System` modules using a hardcoded state machine. Its logic is imperative and explicit, built around a central `switch` statement to handle state transitions.
 
 The authoritative definition of all game states and their valid transitions is located in `docs/L1_ProjectOverview/L1_HighLevelFlow.md`. This document specifies the `GameManager`'s responsibilities within each of those states.
 
@@ -12,7 +12,7 @@ Before any state becomes active, the `GameManager` performs a one-time setup:
 
 ## Game State Logic
 
-This section details the `GameManager`'s actions for each game state. The teardown of a state's active `System` is always handled by the `OnEnter` logic of the subsequent state to centralize all transition logic.
+The `GameManager`'s core is a central `transitionTo(state)` function containing a `switch` statement. When a transition is requested, this function executes the appropriate `case` block for the *new* state. The `OnEnter` logic detailed below for each state represents the body of that `case` block, which is responsible for tearing down the previous system and setting up the new one.
 
 ### `InitialBoot`
 

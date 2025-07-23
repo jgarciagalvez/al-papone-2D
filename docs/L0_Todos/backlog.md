@@ -1,0 +1,1 @@
+- remember to check in on the two different patterns in system management: menusystem always is teardown between states. while storysystem persits when it is used twice. is this good? check later once done systems. 
