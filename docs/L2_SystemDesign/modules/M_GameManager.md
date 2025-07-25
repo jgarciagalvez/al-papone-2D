@@ -6,17 +6,11 @@ The authoritative definition of all game states and their valid transitions is l
 
 ## Data Management Strategy
 
-The `GameManager` uses a **"Session + Payload"** model to manage data flow between itself and the `Systems` it controls. This model clearly separates persistent state from transient initialization data.
+The `GameManager` is the orchestrator for the application's **Centralized State Model**. It is the sole owner of all shared data objects (`GameSession`, `GameSettings`, `AssetLibrary`) and is responsible for managing the high-level game state machine.
 
-*   **`GameSession` Object:** A state object containing all data for a single playthrough, composed of modular sub-objects (`PlayerProfile`, `SessionProgress`, `Scoring`).
-    *   **Ownership:** Owned and managed by the `GameManager`.
-    *   **Communication:** Passed by **scoped reference**. The `GameManager` provides each `System` with access to only the specific sub-sections of the `GameSession` it requires, enforcing a principle of least privilege.
-    *   **Schema:** Defined in `docs/L2_SystemDesign/schemas/S_GameSession.md`.
+When a state transition occurs, the `GameManager` instantiates the appropriate `System` for the new state and provides it with **scoped references** to only the specific data objects it needs to perform its function.
 
-*   **Transition Payloads:** Ephemeral data objects used only for `System` initialization.
-    *   **Ownership:** Created and owned by the `System` that initiates a state transition.
-    *   **Communication:** Passed as an argument in the `transitionTo(state, payload)` method. The initiating `System` provides the payload, and the `GameManager` passes it directly to the new `System` without inspection.
-    *   **Purpose:** To provide context-specific startup data (e.g., a `levelId`) to the next `System` without polluting the persistent `GameSession`.
+For a complete definition of the data flow and management strategy, see [L2_DataFlowAndManagement.md](../L2_DataFlowAndManagement.md).
 
 ## Initial Setup
 
@@ -102,7 +96,7 @@ The `GameManager`'s core is a central `transitionTo(state)` function containing 
 
 **OnEnter Logic:**
 1.  Handles teardown of the previous system (`MenuSystem` from either `MainMenu` or `ViewLeaderboard`).
-2.  Instantiates the `StorySystem`, providing it with the designated `Active Services`, the `LevelLoadData` payload, and a reference to `GameSession.sessionProgress`.
+2.  Instantiates the `StorySystem`, providing it with the designated `Active Services` and a reference to `GameSession.sessionProgress`. The `StorySystem` reads the `currentLevelId` from this object to determine which level to load.
 3.  Sets `StorySystem` as the active system.
 
 **OnUpdate Logic:**
@@ -205,7 +199,7 @@ The `GameManager`'s core is a central `transitionTo(state)` function containing 
 
 **OnEnter Logic:**
 1.  Handles teardown of the `GameplaySystem`.
-2.  Instantiates the `StorySystem`, providing it with the designated `Active Services`, the `PlayerDeadData` payload, and references to `GameSession.scoring` and `GameSession.sessionProgress`.
+2.  Instantiates the `StorySystem`, providing it with the designated `Active Services` and references to `GameSession.scoring` and `GameSession.sessionProgress`.
 3.  Sets `StorySystem` as the active system.
 
 **OnUpdate Logic:**
